@@ -33,7 +33,7 @@ function App() {
     
     // Create session
     createSession();
-  }, []);
+  }, [createSession]);
   
   // Focus input when component renders and when processing state changes
   useEffect(() => {
