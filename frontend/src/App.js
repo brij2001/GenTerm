@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import FileUploader from './components/FileUploader';
 import sessionService from './services/sessionService';
 import chatService from './services/chatService';
@@ -16,6 +16,21 @@ function App() {
   const inputRef = useRef(null);
   const terminalRef = useRef(null);
   const initializedRef = useRef(false);
+
+  const addToTerminal = (text, type = 'system') => {
+    setTerminalHistory(prev => [...prev, { text, type }]);
+  };
+
+  const createSession = useCallback(async () => {
+    try {
+      const id = await sessionService.createSession();
+      setSessionId(id);
+      setTerminalHistory(prev => [...prev, { text: `Session connected: ${id}`, type: 'system' }]);
+    } catch (error) {
+      console.error('Failed to create session:', error);
+      setTerminalHistory(prev => [...prev, { text: 'Failed to create session. Please refresh the page.', type: 'error' }]);
+    }
+  }, []);
 
   useEffect(() => {
     // Prevent double initialization due to StrictMode
@@ -55,21 +70,6 @@ function App() {
       inputRef.current.focus();
     }
   }, [terminalHistory]);
-
-  const createSession = async () => {
-    try {
-      const id = await sessionService.createSession();
-      setSessionId(id);
-      addToTerminal(`Session connected: ${id}`, 'system');
-    } catch (error) {
-      console.error('Failed to create session:', error);
-      addToTerminal('Failed to create session. Please refresh the page.', 'error');
-    }
-  };
-
-  const addToTerminal = (text, type = 'system') => {
-    setTerminalHistory(prev => [...prev, { text, type }]);
-  };
 
   const handleInputChange = (e) => {
     setCurrentInput(e.target.value);

@@ -73,7 +73,9 @@ const FileUploader = ({ onFilesUploaded }) => {
     >
       <h3>Upload Files</h3>
       <p>Drag & drop files here or click to browse</p>
-      <p>Supported formats: .txt, .pdf, .png, .jpg</p>
+      <p>Supported formats: .txt, .pdf</p>
+      <p>Unstable: .png, .jpg</p>
+      <p>Note: working on fixing image support</p>
       <button 
         className="upload-button" 
         onClick={handleButtonClick}
