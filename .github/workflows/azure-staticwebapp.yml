@@ -15,12 +15,13 @@ name: Deploy web app to Azure Static Web Apps
 on:
   push:
     branches: [ "main" ]
+    paths: [ 'frontend/**' ]
 
 # Environment variables available to all jobs and steps in this workflow
 env:
-  APP_LOCATION: "/" # location of your client code
-  API_LOCATION: "api" # location of your api source code - optional
-  APP_ARTIFACT_LOCATION: "build" # location of client code build output
+  APP_LOCATION: "frontend" # location of your frontend code
+  API_LOCATION: "" # no API source code
+  APP_ARTIFACT_LOCATION: "frontend/build" # location of frontend build output
   AZURE_STATIC_WEB_APPS_API_TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }} # secret containing deployment token for your static web app
 
 permissions:
@@ -33,22 +34,24 @@ jobs:
       pull-requests: write # for Azure/static-web-apps-deploy to comment on PRs
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
-    name: Build and Deploy Job
+    name: Build and Deploy Frontend
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: true
-      - name: Build And Deploy
+      - name: Build Frontend
+        run: |
+          cd ${{ env.APP_LOCATION }}
+          npm install
+          npm run build
+      - name: Deploy Frontend
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ env.AZURE_STATIC_WEB_APPS_API_TOKEN }} # secret containing api token for app
           repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
           action: "upload"
-          ###### Repository/Build Configurations - These values can be configured to match you app requirements. ######
-          # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
           app_location: ${{ env.APP_LOCATION }}
           api_location: ${{ env.API_LOCATION }}
           app_artifact_location: ${{ env.APP_ARTIFACT_LOCATION }}
-          ###### End of Repository/Build Configurations ######
 
