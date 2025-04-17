@@ -147,7 +147,7 @@ function App() {
     addToTerminal('Available Commands:', 'system');
     addToTerminal('clear - Clear the terminal', 'system');
     addToTerminal('files - List uploaded files', 'system');
-    addToTerminal('help - Show available commands', 'system');
+    addToTerminal('Type "help" to display this list of commands.', 'system');
     addToTerminal('', 'system');
     addToTerminal('Any other input will be treated as a question for the AI.', 'system');
   };
