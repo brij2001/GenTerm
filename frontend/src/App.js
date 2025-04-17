@@ -29,7 +29,7 @@ function App() {
     addToTerminal('Type your question and press Enter to ask.', 'system');
     addToTerminal('Type "clear" to clear the terminal.', 'system');
     addToTerminal('Type "files" to see uploaded files.', 'system');
-    addToTerminal('Type "help" for more commands.', 'system');
+    addToTerminal('Type "help" to display this list of commands.', 'system');
     
     // Create session
     createSession();
