@@ -15,6 +15,8 @@ COPY frontend/.env* ./
 COPY frontend/tsconfig*.json ./
 COPY frontend/*.config.js ./
 ENV REACT_APP_API_URL=
+# Disable source maps for production build
+ENV GENERATE_SOURCEMAP=false
 RUN npm run build
 RUN find build -type f | sort
 
