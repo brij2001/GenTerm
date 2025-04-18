@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"github.com/genterm/backend/internal/api"
 	"github.com/genterm/backend/internal/config"
@@ -49,15 +50,29 @@ func main() {
 	// Initialize API handlers
 	apiHandler := api.NewHandler(cfg, sessionManager)
 
-	// Set up HTTP server with CORS middleware
+	// Set up API routes with CORS middleware
 	http.HandleFunc("/api/chat", api.EnableCors(apiHandler.HandleChat))
 	http.HandleFunc("/api/session", api.EnableCors(apiHandler.HandleSession))
 
 	// Create a file server for static files
-	fs := http.FileServer(http.Dir("/app/frontend/build"))
+	staticDir := "/app/frontend/build"
+	fs := http.FileServer(http.Dir(staticDir))
 
-	// Serve static files for the frontend
-	http.Handle("/", fs)
+	// Handler for static files that also handles SPA routing
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		// Check if the requested file exists
+		path := filepath.Join(staticDir, r.URL.Path)
+		_, err := os.Stat(path)
+
+		// If path doesn't exist or is a directory, serve the index.html
+		if os.IsNotExist(err) || r.URL.Path != "/" && r.URL.Path != "/index.html" {
+			http.ServeFile(w, r, filepath.Join(staticDir, "index.html"))
+			return
+		}
+
+		// Otherwise, serve the requested file
+		fs.ServeHTTP(w, r)
+	})
 
 	// Get port from environment or use default
 	port := os.Getenv("PORT")
