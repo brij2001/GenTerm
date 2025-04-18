@@ -52,8 +52,7 @@ EXPOSE 3000
 
 # Create a startup script
 RUN echo '#!/bin/sh' > /app/startup.sh && \
-    echo 'npm install -g serve' >> /app/startup.sh && \
-    echo 'serve -s /app/frontend/build -l 3000 &' >> /app/startup.sh && \
+    echo 'export PORT=3000' >> /app/startup.sh && \
     echo 'cd /app && ./server' >> /app/startup.sh && \
     chmod +x /app/startup.sh
 

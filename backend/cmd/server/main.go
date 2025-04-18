@@ -54,7 +54,7 @@ func main() {
 	http.HandleFunc("/api/session", api.EnableCors(apiHandler.HandleSession))
 
 	// Create a file server for static files
-	fs := http.FileServer(http.Dir("../../frontend/dist"))
+	fs := http.FileServer(http.Dir("/app/frontend/build"))
 
 	// Serve static files for the frontend
 	http.Handle("/", fs)
