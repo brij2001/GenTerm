@@ -29,12 +29,14 @@ func main() {
 	// Initialize API handlers
 	apiHandler := api.NewHandler(cfg, sessionManager)
 
-	// Set up HTTP server
-	http.HandleFunc("/api/chat", apiHandler.HandleChat)
-	http.HandleFunc("/api/session", apiHandler.HandleSession)
+	// Set up HTTP server with CORS middleware
+	http.HandleFunc("/api/chat", api.EnableCors(apiHandler.HandleChat))
+	http.HandleFunc("/api/session", api.EnableCors(apiHandler.HandleSession))
+
+	// Create a file server for static files
+	fs := http.FileServer(http.Dir("../../frontend/dist"))
 
 	// Serve static files for the frontend
-	fs := http.FileServer(http.Dir("../../frontend/dist"))
 	http.Handle("/", fs)
 
 	// Get port from environment or use default
@@ -42,9 +44,14 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
+	model := os.Getenv("LLM_MODEL")
+	if model == "" {
+		model = "gpt-4o-mini"
+	}
 
 	// Start the server
 	log.Printf("Starting server on :%s", port)
+	log.Printf("MODEL: %s", model)
 	err = http.ListenAndServe(":"+port, nil)
 	if err != nil {
 		log.Fatalf("Server failed: %v", err)

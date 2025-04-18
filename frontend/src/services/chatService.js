@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_API_URL || '';
+
 /**
  * Chat service for interacting with LLM API
  */
@@ -14,8 +16,9 @@ const chatService = {
   sendQuery: async (sessionId, query, context) => {
     try {
       const contextArray = context ? [context] : [];
-      
-      const response = await axios.post('/api/chat', {
+      // console.log axios url
+      console.log(axios.defaults.baseURL);
+      const response = await axios.post(`${API_URL}/api/chat`, {
         sessionId,
         query,
         context: contextArray
@@ -50,7 +53,7 @@ const chatService = {
         },
       ];
       
-      const response = await axios.post('/api/chat', {
+      const response = await axios.post(`${API_URL}/api/chat`, {
         sessionId,
         query,
         context: contextArray,

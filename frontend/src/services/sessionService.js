@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_API_URL || '';
+
 /**
  * Session service for managing chat sessions
  */
@@ -10,7 +12,7 @@ const sessionService = {
    */
   createSession: async () => {
     try {
-      const response = await axios.post('/api/session', {
+      const response = await axios.post(`${API_URL}/api/session`, {
         action: 'create'
       });
       
@@ -28,7 +30,7 @@ const sessionService = {
    */
   getSession: async (sessionId) => {
     try {
-      const response = await axios.post('/api/session', {
+      const response = await axios.post(`${API_URL}/api/session`, {
         action: 'get',
         id: sessionId
       });

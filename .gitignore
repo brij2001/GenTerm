@@ -32,3 +32,4 @@ dist/
 
 #build
 build/
+frontend/package-lock.json
