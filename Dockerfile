@@ -22,12 +22,16 @@ FROM golang:1.21-alpine AS backend-build
 WORKDIR /app/backend
 COPY backend/ ./
 RUN go mod download
-# Set environment variables
+# Set environment variables for build time
+ARG LLM_BASE_URL
+ARG LLM_API_KEY
+ARG LLM_MODEL
 ENV PORT=8080
 ENV LLM_BASE_URL=${LLM_BASE_URL}
 ENV LLM_API_KEY=${LLM_API_KEY}
 ENV LLM_MODEL=${LLM_MODEL}
-RUN go build -o server ./cmd/server/main.go
+# Use ldflags to embed these values directly into the binary
+RUN go build -ldflags="-X 'main.LlmApiKey=${LLM_API_KEY}' -X 'main.LlmModel=${LLM_MODEL}' -X 'main.LlmBaseUrl=${LLM_BASE_URL}'" -o server ./cmd/server/main.go
 
 FROM alpine:latest
 
@@ -42,7 +46,6 @@ COPY --from=frontend-build /app/frontend/build /app/frontend/build
 
 # Copy the backend executable from backend-build stage
 COPY --from=backend-build /app/backend/server /app/server
-
 
 # Expose port for Azure Web App
 EXPOSE 3000

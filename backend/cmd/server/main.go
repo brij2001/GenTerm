@@ -11,10 +11,30 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// These variables will be set during build via ldflags
+var (
+	LlmApiKey  string
+	LlmModel   string
+	LlmBaseUrl string
+)
+
 func main() {
-	// Load environment variables
+	// Load environment variables from .env if available
 	if err := godotenv.Load(); err != nil {
 		log.Println("Warning: No .env file found")
+	}
+
+	// Set environment variables from build-time values if not already set
+	if os.Getenv("LLM_API_KEY") == "" && LlmApiKey != "" {
+		os.Setenv("LLM_API_KEY", LlmApiKey)
+	}
+
+	if os.Getenv("LLM_MODEL") == "" && LlmModel != "" {
+		os.Setenv("LLM_MODEL", LlmModel)
+	}
+
+	if os.Getenv("LLM_BASE_URL") == "" && LlmBaseUrl != "" {
+		os.Setenv("LLM_BASE_URL", LlmBaseUrl)
 	}
 
 	// Initialize configuration
