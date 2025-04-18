@@ -1,32 +1,34 @@
 package api
 
 import (
+	"log"
 	"net/http"
-	"os"
 )
 
 // CorsMiddleware wraps an http.Handler to add CORS headers
 func CorsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Check origin and set appropriate CORS headers
+		// Get the origin
 		origin := r.Header.Get("Origin")
-		allowedOrigins := []string{
-			"https://genterm-d9eue4hhc7azcvb4.eastus-01.azurewebsites.net",
-			"http://localhost:3000",
-		}
+		log.Printf("Request origin: %s, Method: %s", origin, r.Method)
 
-		// Allow any origin in development mode or check against allowed list
-		if os.Getenv("NODE_ENV") != "production" || containsOrigin(allowedOrigins, origin) {
+		// Set CORS headers - in production, allow same-site requests and specific domains
+		if origin != "" {
+			// Allow the specific origin that made the request
 			w.Header().Set("Access-Control-Allow-Origin", origin)
+			w.Header().Set("Vary", "Origin") // Important when using specific origin values
 		} else {
-			w.Header().Set("Access-Control-Allow-Origin", allowedOrigins[0])
+			// Fallback for no origin header
+			w.Header().Set("Access-Control-Allow-Origin", "*")
 		}
 
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 		// Handle preflight requests
 		if r.Method == "OPTIONS" {
+			log.Printf("Handling OPTIONS preflight request")
 			w.WriteHeader(http.StatusOK)
 			return
 		}
@@ -36,38 +38,30 @@ func CorsMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-// Helper function to check if origin is in allowed list
-func containsOrigin(allowedOrigins []string, origin string) bool {
-	for _, allowed := range allowedOrigins {
-		if allowed == origin {
-			return true
-		}
-	}
-	return false
-}
-
 // EnableCors is a wrapper for individual handlers
 func EnableCors(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Check origin and set appropriate CORS headers
+		// Get the origin
 		origin := r.Header.Get("Origin")
-		allowedOrigins := []string{
-			"https://genterm-d9eue4hhc7azcvb4.eastus-01.azurewebsites.net",
-			"http://localhost:3000",
-		}
+		log.Printf("API request origin: %s, Method: %s, Path: %s", origin, r.Method, r.URL.Path)
 
-		// Allow any origin in development mode or check against allowed list
-		if os.Getenv("NODE_ENV") != "production" || containsOrigin(allowedOrigins, origin) {
+		// Set CORS headers - in production, allow same-site requests and specific domains
+		if origin != "" {
+			// Allow the specific origin that made the request
 			w.Header().Set("Access-Control-Allow-Origin", origin)
+			w.Header().Set("Vary", "Origin") // Important when using specific origin values
 		} else {
-			w.Header().Set("Access-Control-Allow-Origin", allowedOrigins[0])
+			// Fallback for no origin header
+			w.Header().Set("Access-Control-Allow-Origin", "*")
 		}
 
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 		// Handle preflight requests
 		if r.Method == "OPTIONS" {
+			log.Printf("Handling OPTIONS preflight request for API")
 			w.WriteHeader(http.StatusOK)
 			return
 		}

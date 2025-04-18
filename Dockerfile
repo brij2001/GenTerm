@@ -16,6 +16,7 @@ COPY frontend/tsconfig*.json ./
 COPY frontend/*.config.js ./
 ENV REACT_APP_API_URL=
 RUN npm run build
+RUN find build -type f | sort
 
 FROM golang:1.21-alpine AS backend-build
 
@@ -43,6 +44,8 @@ WORKDIR /app
 
 # Copy frontend build from frontend-build stage
 COPY --from=frontend-build /app/frontend/build /app/frontend/build
+RUN ls -la /app/frontend/build
+RUN find /app/frontend/build -type f | sort
 
 # Copy the backend executable from backend-build stage
 COPY --from=backend-build /app/backend/server /app/server
