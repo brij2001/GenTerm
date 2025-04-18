@@ -14,6 +14,7 @@ COPY frontend/public ./public
 COPY frontend/.env* ./
 COPY frontend/tsconfig*.json ./
 COPY frontend/*.config.js ./
+ENV REACT_APP_API_URL=
 RUN npm run build
 
 FROM golang:1.21-alpine AS backend-build
