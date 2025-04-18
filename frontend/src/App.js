@@ -44,6 +44,7 @@ function App() {
     addToTerminal('Type your question and press Enter to ask.', 'system');
     addToTerminal('Type "clear" to clear the terminal.', 'system');
     addToTerminal('Type "files" to see uploaded files.', 'system');
+    addToTerminal('Type "source" to see source code.', 'system');
     addToTerminal('Type "help" to display this list of commands.', 'system');
     
     // Create session
@@ -137,6 +138,9 @@ function App() {
       case 'files':
         listFiles();
         break;
+      case 'source':
+        showSource();
+        break;
       default:
         await processQuery(command);
         break;
@@ -147,6 +151,7 @@ function App() {
     addToTerminal('Available Commands:', 'system');
     addToTerminal('clear - Clear the terminal', 'system');
     addToTerminal('files - List uploaded files', 'system');
+    addToTerminal('source - Show source code', 'system');
     addToTerminal('Type "help" to display this list of commands.', 'system');
     addToTerminal('', 'system');
     addToTerminal('Any other input will be treated as a question for the AI.', 'system');
@@ -162,6 +167,10 @@ function App() {
     uploadedFiles.forEach((file, index) => {
       addToTerminal(`${index + 1}. ${file.name} (${fileService.formatFileSize(file.size)})`, 'system');
     });
+  };
+
+  const showSource = () => {
+    addToTerminal('Source Code: https://github.com/brij2001/GenTerm', 'system');
   };
 
   const processQuery = async (query) => {
