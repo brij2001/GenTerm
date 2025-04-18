@@ -14,7 +14,7 @@ COPY frontend/public ./public
 COPY frontend/.env* ./
 COPY frontend/tsconfig*.json ./
 COPY frontend/*.config.js ./
-
+ENV REACT_APP_API_URL=http://localhost:8080
 RUN npm run build
 
 FROM golang:1.21-alpine AS backend-build
@@ -22,6 +22,7 @@ FROM golang:1.21-alpine AS backend-build
 WORKDIR /app/backend
 COPY backend/ ./
 RUN go mod download
+# Set environment variables
 ENV PORT=8080
 ENV LLM_BASE_URL=${LLM_BASE_URL}
 ENV LLM_API_KEY=${LLM_API_KEY}
@@ -41,9 +42,6 @@ COPY --from=frontend-build /app/frontend/build /app/frontend/build
 
 # Copy the backend executable from backend-build stage
 COPY --from=backend-build /app/backend/server /app/server
-COPY --from=backend-build /app/backend/.env /app/.env
-
-# Set environment variables
 
 
 # Expose port for Azure Web App
