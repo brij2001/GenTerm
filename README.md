@@ -2,7 +2,7 @@
 
 GenTerm is a terminal-based application that uses Generative AI to perform Retrieval-Augmented Generation (RAG) on your files. Upload documents, images, and other file types, then ask questions about them in a familiar terminal interface.
 
-![GenTerm](https://github.com/genterm/genterm/raw/main/frontend/public/screenshot.png)
+![Use Case](/image.png)
 
 ## Features
 
